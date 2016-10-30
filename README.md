@@ -9,6 +9,12 @@ Note that `run.sh` uses the `--privileged` argument to allow strace to function.
 #### Example Output
 
 Failure:
+
+Note the `EPERM (Operation not permitted)` from `sendto`. This error is not documented in `sendto(2)`.
+Some searches suggest that it's related to iptables. Disabling iptables on the Docker host does not resolve the error.
+
+In some cases the error comes from the "server" connection, sometimes from the "client".
+
 ```
 socket(PF_INET, SOCK_STREAM, IPPROTO_TCP) = 3
 socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 3
