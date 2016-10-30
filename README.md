@@ -15,88 +15,93 @@ Some searches suggest that it's related to iptables. Disabling iptables on the D
 
 In some cases the error comes from the "server" connection, sometimes from the "client".
 
+The error seems to have some relation to the `sendto` being interruptted. In all observed instances at least one of the `sendto`
+calls includes `<unfinished ...>` and `<... sendto resumed> )      = -1 EPERM (Operation not permitted)`. However, the error
+does not occur everytime `sendto` is interruptted.
+
+Full logs of a run are in [output.log](output.log).
+
 ```
-socket(PF_INET, SOCK_STREAM, IPPROTO_TCP) = 3
-socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 3
-setsockopt(3, SOL_IPV6, IPV6_V6ONLY, [1], 4) = 0
-bind(3, {sa_family=AF_INET6, sin6_port=htons(0), inet_pton(AF_INET6, "::1", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = 0
-socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 4
-setsockopt(4, SOL_IPV6, IPV6_V6ONLY, [0], 4) = 0
-bind(4, {sa_family=AF_INET6, sin6_port=htons(0), inet_pton(AF_INET6, "::ffff:127.0.0.1", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = 0
-socket(PF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 3
-setsockopt(3, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
-bind(3, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
-getsockname(3, {sa_family=AF_INET, sin_port=htons(45366), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
-socket(PF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 5
-setsockopt(5, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
-bind(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
-getsockname(5, {sa_family=AF_INET, sin_port=htons(37761), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
-sendto(5, "", 0, 0, {sa_family=AF_INET, sin_port=htons(45366), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EPERM (Operation not permitted)
-serverConn: write udp4 0.0.0.0:37761->127.0.0.1:45366: sendto: operation not permitted
-(*net.UDPConn)(0xc420026048)({
- conn: (net.conn) {
-  fd: (*net.netFD)(0xc420054a80)({
-   fdmu: (net.fdMutex) {
-    state: (uint64) 0,
-    rsema: (uint32) 0,
-    wsema: (uint32) 0
-   },
-   sysfd: (int) 5,
-   family: (int) 2,
-   sotype: (int) 2,
-   isConnected: (bool) false,
-   net: (string) (len=4) "udp4",
-   laddr: (*net.UDPAddr)(0xc42006c840)(0.0.0.0:37761),
-   raddr: (net.Addr) <nil>,
-   pd: (net.pollDesc) {
-    runtimeCtx: (uintptr) 0x7f8d7e3aae40
-   }
-  })
- }
-})
-clientConn: <nil>
-(*net.UDPConn)(0xc420026040)({
- conn: (net.conn) {
-  fd: (*net.netFD)(0xc420054a10)({
-   fdmu: (net.fdMutex) {
-    state: (uint64) 0,
-    rsema: (uint32) 0,
-    wsema: (uint32) 0
-   },
-   sysfd: (int) 3,
-   family: (int) 2,
-   sotype: (int) 2,
-   isConnected: (bool) false,
-   net: (string) (len=4) "udp4",
-   laddr: (*net.UDPAddr)(0xc42006c7b0)(0.0.0.0:45366),
-   raddr: (net.Addr) <nil>,
-   pd: (net.pollDesc) {
-    runtimeCtx: (uintptr) 0x7f8d7e3aaf00
-   }
-  })
- }
-})
+close(3)                                = 0
+close(3)                                = 0
+close(3)                                = 0
+Process 5643 attached
+Process 5644 attached
+Process 5645 attached
+Process 5646 attached
+[pid  5642] close(3)                    = 0
+[pid  5642] socket(PF_INET, SOCK_STREAM, IPPROTO_TCP) = 3
+[pid  5642] close(3)                    = 0
+[pid  5642] socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 3
+[pid  5642] setsockopt(3, SOL_IPV6, IPV6_V6ONLY, [1], 4) = 0
+[pid  5642] bind(3, {sa_family=AF_INET6, sin6_port=htons(0), inet_pton(AF_INET6, "::1", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = 0
+[pid  5642] socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 4
+[pid  5642] setsockopt(4, SOL_IPV6, IPV6_V6ONLY, [0], 4) = 0
+[pid  5642] bind(4, {sa_family=AF_INET6, sin6_port=htons(0), inet_pton(AF_INET6, "::ffff:127.0.0.1", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = 0
+[pid  5642] close(4)                    = 0
+[pid  5642] close(3)                    = 0
+IN MAIN
+[pid  5642] socket(PF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 3
+[pid  5642] setsockopt(3, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
+[pid  5642] bind(3, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+[pid  5642] getsockname(3, {sa_family=AF_INET, sin_port=htons(60315), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+[pid  5642] socket(PF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 5
+[pid  5642] setsockopt(5, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
+[pid  5642] bind(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+[pid  5642] getsockname(5, {sa_family=AF_INET, sin_port=htons(36289), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+[pid  5642] sendto(5, "", 0, 0, {sa_family=AF_INET, sin_port=htons(60315), sin_addr=inet_addr("127.0.0.1")}, 16 <unfinished ...>
+[pid  5646] sendto(3, "", 0, 0, {sa_family=AF_INET, sin_port=htons(36289), sin_addr=inet_addr("127.0.0.1")}, 16 <unfinished ...>
+[pid  5642] <... sendto resumed> )      = 0
+[pid  5646] <... sendto resumed> )      = -1 EPERM (Operation not permitted)
+[pid  5646] close(3)                    = 0
+[pid  5642] close(5)                    = 0
+serverConn: <nil>
+clientConn: write udp4 0.0.0.0:60315->127.0.0.1:36289: sendto: operation not permitted
+[pid  5645] +++ exited with 1 +++
+[pid  5644] +++ exited with 1 +++
+[pid  5643] +++ exited with 1 +++
+[pid  5646] +++ exited with 1 +++
 +++ exited with 1 +++
 ```
 
 
 Success:
 ```
-socket(PF_INET, SOCK_STREAM, IPPROTO_TCP) = 3
-socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 3
-setsockopt(3, SOL_IPV6, IPV6_V6ONLY, [1], 4) = 0
-bind(3, {sa_family=AF_INET6, sin6_port=htons(0), inet_pton(AF_INET6, "::1", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = 0
-socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 4
-setsockopt(4, SOL_IPV6, IPV6_V6ONLY, [0], 4) = 0
-bind(4, {sa_family=AF_INET6, sin6_port=htons(0), inet_pton(AF_INET6, "::ffff:127.0.0.1", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = 0
-socket(PF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 3
-setsockopt(3, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
-bind(3, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
-getsockname(3, {sa_family=AF_INET, sin_port=htons(39642), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
-socket(PF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 5
-setsockopt(5, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
-bind(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
-getsockname(5, {sa_family=AF_INET, sin_port=htons(50652), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
-sendto(5, "", 0, 0, {sa_family=AF_INET, sin_port=htons(39642), sin_addr=inet_addr("127.0.0.1")}, 16) = 0
+close(3)                                = 0
+close(3)                                = 0
+close(3)                                = 0
+Process 316 attached
+Process 317 attached
+Process 318 attached
+[pid   315] close(3)                    = 0
+Process 319 attached
+[pid   315] socket(PF_INET, SOCK_STREAM, IPPROTO_TCP) = 3
+[pid   315] close(3)                    = 0
+[pid   315] socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 3
+[pid   315] setsockopt(3, SOL_IPV6, IPV6_V6ONLY, [1], 4) = 0
+[pid   315] bind(3, {sa_family=AF_INET6, sin6_port=htons(0), inet_pton(AF_INET6, "::1", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = 0
+[pid   315] socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP) = 4
+[pid   315] setsockopt(4, SOL_IPV6, IPV6_V6ONLY, [0], 4) = 0
+[pid   315] bind(4, {sa_family=AF_INET6, sin6_port=htons(0), inet_pton(AF_INET6, "::ffff:127.0.0.1", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = 0
+[pid   315] close(4)                    = 0
+[pid   315] close(3)                    = 0
+IN MAIN
+[pid   315] socket(PF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 3
+[pid   315] setsockopt(3, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
+[pid   315] bind(3, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+[pid   315] getsockname(3, {sa_family=AF_INET, sin_port=htons(54441), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+[pid   315] socket(PF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 5
+[pid   315] setsockopt(5, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
+[pid   315] bind(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+[pid   315] getsockname(5, {sa_family=AF_INET, sin_port=htons(58925), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+[pid   315] sendto(5, "", 0, 0, {sa_family=AF_INET, sin_port=htons(54441), sin_addr=inet_addr("127.0.0.1")}, 16) = 0
+[pid   315] close(5)                    = 0
+[pid   315] sendto(3, "", 0, 0, {sa_family=AF_INET, sin_port=htons(58925), sin_addr=inet_addr("127.0.0.1")}, 16) = 0
+[pid   315] close(3)                    = 0
+[pid   319] <... epoll_wait resumed> )  = ? <unavailable>
+[pid   319] +++ exited with 0 +++
+[pid   318] +++ exited with 0 +++
+[pid   317] +++ exited with 0 +++
+[pid   316] +++ exited with 0 +++
 +++ exited with 0 +++
 ```
