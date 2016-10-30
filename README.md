@@ -1,8 +1,8 @@
-This repo reproduces a bug observed when two goroutines are sending to each other in parallels over UDP.
+This repo reproduces a bug observed when two goroutines are sending to each other concurrently over UDP.
 
 I have tried to reproduce on OSX (bare metal) and Ubuntu (Parallels VM), but have only observed the failure within Docker.
 
-Easiest way to reproduce is executing `./run.sh`, provided you have Docker install. This will build repro.go and execute it under strace repeatedly until it fails.
+Easiest way to reproduce is executing `./run.sh`; provided you have Docker installed. This will build repro.go and execute it under strace repeatedly until it fails.
 
 Note that `run.sh` uses the `--privileged` argument to allow strace to function.
 
